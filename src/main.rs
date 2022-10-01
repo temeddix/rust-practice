@@ -21,9 +21,7 @@ fn main() {
             .read_line(&mut guess)
             .expect("Failed to read line");
 
-        guess = guess.trim().to_string();
-
-        match guess.parse() {
+        match guess.trim().parse() {
             Ok(number) => guess_number = number,
             Err(_error) => {
                 guess = "0".to_string();
