@@ -1,12 +1,17 @@
+use pyo3::prelude::*;
+use pyo3::types::IntoPyDict;
 use rand::Rng;
 use std::cmp::Ordering;
 use std::io;
 
 fn main() {
-    println!("{}", make_guide_text());
+    let _test_result = test_python();
+}
+
+fn make_guide_text() {
+    println!("Guess the number!");
 
     let secret_number = rand::thread_rng().gen_range(1..=100);
-
     println!("The secret number is: {secret_number}");
 
     let mut guess: String;
@@ -42,6 +47,16 @@ fn main() {
     }
 }
 
-fn make_guide_text() -> String {
-    return "Guess the number!".to_string();
+fn test_python() -> PyResult<()> {
+    Python::with_gil(|py| {
+        let sys = py.import("sys")?;
+        let version: String = sys.getattr("version")?.extract()?;
+
+        let locals = [("os", py.import("os")?)].into_py_dict(py);
+        let code = "os.getenv('USER') or os.getenv('USERNAME') or 'Unknown'";
+        let user: String = py.eval(code, None, Some(&locals))?.extract()?;
+
+        println!("Hello {}, I'm Python {}", user, version);
+        Ok(())
+    })
 }
